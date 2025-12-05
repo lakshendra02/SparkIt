@@ -8,7 +8,8 @@ const cookieName = process.env.COOKIE_NAME || "chat_token";
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
+  // For cross-site (Vercel frontend -> Render backend) allow None in production
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 1000 * 60 * 60 * 24 * 7,
 };
 

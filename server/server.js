@@ -17,12 +17,19 @@ connectDB();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: CLIENT_URL,
-    credentials: true,
-  })
-);
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
+const corsOptions = {
+  origin: CLIENT_URL,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/channels", require("./routes/channels"));
@@ -31,7 +38,7 @@ app.use("/api/messages", require("./routes/messages"));
 const io = new Server(server, {
   cors: {
     origin: CLIENT_URL,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   },
 });
