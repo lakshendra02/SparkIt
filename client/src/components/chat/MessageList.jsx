@@ -116,7 +116,7 @@ export default function MessageList({ channelId, user, socket }) {
     if (!channelId) return;
     setLoading(true);
     try {
-      const res = await fetchMessages({ channelId, limit: 30 });
+      const res = await fetchMessages({ channelId, limit: 10 });
       console.debug(
         "MessageList: loadRecent fetched",
         (res.data.messages || []).length
