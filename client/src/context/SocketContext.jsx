@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { getToken } from "../utils/storage";
 
 const SocketContext = createContext();
 
@@ -8,6 +9,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    const token = getToken();
 
     const newSocket = io(apiUrl, {
       transports: ["websocket"],
@@ -15,6 +17,9 @@ export const SocketProvider = ({ children }) => {
       reconnectionAttempts: 5,
       autoConnect: true,
       withCredentials: true,
+      auth: {
+        token: token || "",
+      },
     });
 
     newSocket.on("connect", () => {

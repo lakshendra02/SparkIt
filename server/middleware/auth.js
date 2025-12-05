@@ -8,6 +8,15 @@ const authMiddleware = async (req, res, next) => {
     const token =
       req.cookies?.[cookieName] ||
       req.header("Authorization")?.replace("Bearer ", "");
+    console.log("Auth attempt:", {
+      hasCookie: !!req.cookies?.[cookieName],
+      hasAuthHeader: !!req.header("Authorization"),
+      cookies: Object.keys(req.cookies || {}),
+      origin: req.get("origin"),
+      referer: req.get("referer"),
+      method: req.method,
+      path: req.path,
+    });
     if (!token) return res.status(401).json({ message: "Not authenticated" });
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);

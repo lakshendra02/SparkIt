@@ -16,12 +16,14 @@ const cookieOptions = {
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password)
+    if (!name || !email || !password) {
       return res.status(400).json({ message: "Missing fields" });
+    }
 
     const exists = await User.findOne({ email });
-    if (exists)
+    if (exists) {
       return res.status(400).json({ message: "Email already registered" });
+    }
 
     const user = new User({ name, email, password });
     await user.save();
@@ -30,7 +32,7 @@ router.post("/signup", async (req, res) => {
       expiresIn: "7d",
     });
     res.cookie(cookieName, token, cookieOptions);
-    return res.json({ user: user.toJSON() });
+    return res.json({ user: user.toJSON(), token });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error" });
@@ -40,20 +42,25 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password)
+    if (!email || !password) {
       return res.status(400).json({ message: "Missing fields" });
+    }
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
     const match = await user.comparePassword(password);
-    if (!match) return res.status(400).json({ message: "Invalid credentials" });
+    if (!match) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
     res.cookie(cookieName, token, cookieOptions);
-    return res.json({ user: user.toJSON() });
+    return res.json({ user: user.toJSON(), token });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error" });
@@ -67,6 +74,20 @@ router.post("/logout", authMiddleware, (req, res) => {
 
 router.get("/me", authMiddleware, (req, res) => {
   return res.json({ user: req.user });
+});
+
+router.get("/debug-cookies", (req, res) => {
+  res.json({
+    receivedCookies: req.cookies,
+    cookieName,
+    cookieOptions,
+    headers: {
+      origin: req.get("origin"),
+      referer: req.get("referer"),
+      "user-agent": req.get("user-agent"),
+    },
+    nodeEnv: process.env.NODE_ENV,
+  });
 });
 
 module.exports = router;
