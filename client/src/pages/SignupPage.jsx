@@ -31,7 +31,7 @@ export default function SignupPage() {
         {/* Left Section */}
         <div className="hidden md:flex flex-col items-center justify-center bg-linear-to-br from-indigo-600 to-purple-600 text-white p-10">
           <h1 className="text-4xl font-bold mb-4 tracking-tight">
-            Converse Hub ✨
+            Spark It ✨
           </h1>
           <p className="text-sm opacity-90 text-center max-w-xs">
             Create a free account and start chatting.
