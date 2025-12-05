@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-import axios from "axios";
 const api = axios.create({
   baseURL: `${API_URL}/api/messages`,
   withCredentials: true,
